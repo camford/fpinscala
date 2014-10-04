@@ -36,7 +36,15 @@ object MyModule {
 
   // Exercise 1: Write a function to compute the nth fibonacci number
 
-  def fib(n: Int): Int = ???
+  def fib(n: Int): Int = {
+    @annotation.tailrec
+    def go(m: Int, acc: Int): Int =
+      if (m == 0) acc
+      else if (m == 1) acc+1
+      else go(m-1, m+acc)
+
+    go(n, 0)
+  }
 
   // This definition and `formatAbs` are very similar..
   private def formatFactorial(n: Int) = {
@@ -129,28 +137,35 @@ object PolymorphicFunctions {
 
   // Exercise 2: Implement a polymorphic function to check whether
   // an `Array[A]` is sorted
-  def isSorted[A](as: Array[A], gt: (A,A) => Boolean): Boolean = ???
+  def isSorted[A](as: Array[A], gt: (A,A) => Boolean): Boolean = {
+    @annotation.tailrec
+    def go(i: Int): Boolean = {
+      if (i+1 >= as.length) true
+      else {
+        if (gt(as(i), as(i+1))) false
+        else go(i+1)
+      }
+    }
+    go(0)
+  }
 
   // Polymorphic functions are often so constrained by their type
   // that they only have one implementation! Here's an example:
 
   // Exercise 3: Implement `partial1`.
 
-  def partial1[A,B,C](a: A, f: (A,B) => C): B => C =
-    ???
+  def partial1[A,B,C](a: A, f: (A,B) => C): B => C = b => f(a,b)
 
   // Exercise 4: Implement `curry`.
 
   // Note that `=>` associates to the right, so we could
   // write the return type as `A => B => C`
-  def curry[A,B,C](f: (A, B) => C): A => (B => C) =
-    ???
+  def curry[A,B,C](f: (A, B) => C): A => (B => C) = a => (b => f(a,b))
 
   // NB: The `Function2` trait has a `curried` method already
 
   // Exercise 5: Implement `uncurry`
-  def uncurry[A,B,C](f: A => B => C): (A, B) => C =
-    ???
+  def uncurry[A,B,C](f: A => B => C): (A, B) => C = (a,b) => f(a)(b)
 
   /*
   NB: There is a method on the `Function` object in the standard library,
@@ -164,6 +179,5 @@ object PolymorphicFunctions {
 
   // Exercise 6: Implement `compose`
 
-  def compose[A,B,C](f: B => C, g: A => B): A => C =
-    ???
+  def compose[A,B,C](f: B => C, g: A => B): A => C = a => f(g(a))
 }

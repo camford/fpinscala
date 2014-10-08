@@ -57,33 +57,26 @@ object List { // `List` companion object. Contains functions for creating and wo
     case Cons(_, t) => Cons(h, t)
   }
 
+  @annotation.tailrec
   def drop[A](l: List[A], n: Int): List[A] = {
-    def loop(l: List[A], n: Int): List[A] = {
-      if (n==0) l
-      else l match {
-        case Nil => Nil
-        case Cons(h, t) => loop(t, n-1)
-      }
-    }
-    loop(l, n)
-  }
-
-  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = {
-    def loop(l: List[A], f: A => Boolean): List[A] = l match {
+    if (n==0) l
+    else l match {
       case Nil => Nil
-      case Cons(h, t) => if (f(h)) loop(t, f)
-                         else Cons(h, t)
+      case Cons(h, t) => drop(t, n-1)
     }
-    loop(l, f)
   }
 
-  def init[A](l: List[A]): List[A] = {
-    def loop(l: List[A]) : List[A] = l match {
+  @annotation.tailrec
+  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = l match {
+    case Nil => Nil
+    case Cons(h, t) => if (f(h)) dropWhile(t, f)
+                       else Cons(h, t)
+  }
+
+  def init[A](l: List[A]): List[A] = l match {
+      case Nil => Nil
       case Cons(h, t) => if (t==Nil) Nil
-                         else Cons(h, loop(t))
-    }
-    if (l == Nil) Nil
-    else loop(l)
+                         else Cons(h, init(t))
   }
 
   def length[A](l: List[A]): Int = sys.error("todo")

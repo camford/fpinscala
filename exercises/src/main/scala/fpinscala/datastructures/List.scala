@@ -79,9 +79,28 @@ object List { // `List` companion object. Contains functions for creating and wo
                          else Cons(h, init(t))
   }
 
-  def length[A](l: List[A]): Int = sys.error("todo")
+  def length[A](l: List[A]): Int = foldRight(l, 0)((_,acc) => acc + 1)
 
-  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = sys.error("todo")
+/*  def foldRight[A,B](l: List[A], z: B)(f: (A, B) => B): B =
+    l match {
+      case Nil => z
+      case Cons(h,t) => f(h, foldRight(t, z)(f))
+    }*/
+
+  @annotation.tailrec
+  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B =
+    l match {
+      case Nil => z
+      case Cons(h,t) => foldLeft(t,f(z,h))(f)
+    }
+
+  def sum3(ns: List[Int]) = foldLeft(ns, 0)(_ + _)
+  def product3(ns: List[Double]) = foldLeft(ns, 1.0)(_ * _)
+  def length2[A](ns: List[A]): Int = foldLeft(ns, 0)((acc,_) => acc + 1)
+
+  def reverse[A](ns: List[A]): List[A] = foldLeft(ns, Nil: List[A])((x,y) => Cons(y, x))
+
+  def append2[A](l: List[A], r: List[A]): List[A] = foldLeft(l, r)((x,y) => Cons(y,x))
 
   def map[A,B](l: List[A])(f: A => B): List[B] = sys.error("todo")
 }
